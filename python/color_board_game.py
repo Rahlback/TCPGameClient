@@ -181,7 +181,7 @@ def main(num_of_players=1):
         
 
     while True:
-        sleep(0.1)
+        sleep(0.01)
         for board in boards:
             if board.state == 0:
                 board.setup_game()
