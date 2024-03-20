@@ -9,12 +9,27 @@ server_port = 9080
 user_id = 15
 name = "Rasmus"
 
+bytes_per_player_position = 3
+
 class BoardGame:
     class Board:
-        def __init__(self, board_map, player_positions) -> None:
+        def __init__(self, board_map, player_positions={}) -> None:
             self.map = board_map # [ [], [], [], ...]
-            self.positions = {} # Name: [x, y]
-                
+            self.positions = player_positions # Name: [x, y]
+            self.prev_positions = {}
+            self.player_number = 0
+        
+        def update_player_positions(self, player_positions):
+            self.prev_positions = self.positions
+            self.positions = player_positions
+        
+        def set_player_number(self, player_number):
+            self.player_number = player_number
+
+        def print_board_info(self):
+            # print(self.map)
+            print("Player number: ", self.player_number)
+            print("Positions: ", self.positions)
 
     def __init__(self, user_id=user_id, name=name) -> None:
         self.state = 0
@@ -85,12 +100,32 @@ class BoardGame:
                 board.append(board_row)
 
             boards.append(board)
-        for b in boards:
-            for row in b:
-                print(row)
-            print("------")
+        # for b in boards:
+        #     for row in b:
+        #         print(row)
+        #     print("------")
         return boards
         
+    def deserialize_player_positions_and_update_boards(self, serialized_positions):
+        total_bytes_expected = bytes_per_player_position * 4 * len(self.boards)
+        if len(serialized_positions) != total_bytes_expected:
+            print("Missing bytes for player positions: ",
+                   len(serialized_positions), " ", total_bytes_expected)
+        
+        offset = 0
+        for board in self.boards:
+            # [1, x, y, 2, x, y, 3, x, y, 4, x, y]
+            board_data = serialized_positions[offset:offset+12]
+            player_positions = {}
+            player_offset = 0
+            for player_pos in range(4):
+                player_positions[player_pos+1] = [board_data[player_offset+1], board_data[player_offset+2]]
+                player_offset += 3
+            
+            board.update_player_positions(player_positions)
+            offset += 12
+            
+
 
     def setup_game(self):
         data_buffer = self.client.get_message()
@@ -98,16 +133,22 @@ class BoardGame:
         if data_buffer.decode() == "GAME_STARTING":
             print("Start game received. Waiting for boards")
             board_buffer = self.client.get_message()
-            self.deserialize_boards(board_buffer)
+            temp_boards = self.deserialize_boards(board_buffer)
+            for board in temp_boards:
+                new_board_obj = self.Board(board)
+                self.boards.append(new_board_obj)
             
             print("Waiting for player positions")
             player_positions_buffer = list(self.client.get_message())
+            self.deserialize_player_positions_and_update_boards(player_positions_buffer)
             print(len(player_positions_buffer), player_positions_buffer)
 
             print("Waiting for my player number")
             player_number = list(self.client.get_message())
+            for board in self.boards:
+                board.set_player_number(player_number[0])
+                # board.print_board_info()
             sleep(0.001)
-            print(len(player_number), player_number)
             self.state = 1
             
 
@@ -122,6 +163,8 @@ class BoardGame:
             self.client.send(possible_moves[randint(0, 3)] + possible_moves[randint(0, 3)] + possible_moves[randint(0, 3)])
         else: # New board state (Just the updates positions of players)
             print("Waiting for updated player positions")
+            print(list(data_buffer))
+            self.deserialize_player_positions_and_update_boards(data_buffer)
             # player_positions_buffer = list(self.client.get_message())
             # print(len(player_positions_buffer), player_positions_buffer)
 
@@ -129,9 +172,6 @@ class BoardGame:
         # elif data_buffer == bytearray("GAME_STARTING", "ASCII"):
         
     
-
-
-
 def main(num_of_players=1):
     boards = []
     id = 15
@@ -148,6 +188,7 @@ def main(num_of_players=1):
                 print("\n-----------------\n")
             else:
                 board.tick()
+
         
 
 if __name__ == "__main__":
