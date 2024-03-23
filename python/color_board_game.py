@@ -158,12 +158,16 @@ class BoardGame:
         if "GAME_OVER" in message:
             print("All games are now over. Exiting program")
         elif "SEND_MOVES" in message:
-            print("Send moves received. Sending moves")
+            # print("Send moves received. Sending moves")
             possible_moves = ['R', 'L', 'U', 'D']
-            self.client.send(possible_moves[randint(0, 3)] + possible_moves[randint(0, 3)] + possible_moves[randint(0, 3)])
+            number_of_boards = len(self.boards)
+            move_string = ""
+            for board in range(len(self.boards)):
+                move_string += str(possible_moves[randint(0, 3)])
+            self.client.send(move_string)
         else: # New board state (Just the updates positions of players)
-            print("Waiting for updated player positions")
-            print(list(data_buffer))
+            # print("Waiting for updated player positions")
+            # print(list(data_buffer))
             self.deserialize_player_positions_and_update_boards(data_buffer)
             # player_positions_buffer = list(self.client.get_message())
             # print(len(player_positions_buffer), player_positions_buffer)
@@ -181,7 +185,7 @@ def main(num_of_players=1):
         
 
     while True:
-        sleep(0.01)
+        # sleep(0.01)
         for board in boards:
             if board.state == 0:
                 board.setup_game()

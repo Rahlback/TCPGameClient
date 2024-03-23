@@ -20,11 +20,12 @@ class TCPClient:
             print("Failed to established a connection: " + str(e))
             return False
 
-    def send(self, message: str):
+    def send(self, message: str, debug_print=False):
         """ Formats the message string as ASCII and sends it to the server.
         """
         message = message.encode('ascii')
-        print("Trying to send message: ", message)
+        if debug_print:
+            print("Trying to send message: ", message)
         data = bytearray(message)
         # data.append(self.end_of_message as byte)
         self.client.sendall(data)
