@@ -35,6 +35,8 @@ class BoardGame:
         self.state = 0
         self.boards = []
 
+        self.prev_move = ""
+
         self.client = TCPClient(user_id)
         user_name = name + "-" + str(user_id)
         self.client.setup_connection(user_id, user_name, server_ip, server_port)
@@ -155,6 +157,7 @@ class BoardGame:
     def tick(self):
         data_buffer = self.client.get_message()
         message = data_buffer.decode()
+        # print(message)
         if "GAME_OVER" in message:
             print("All games are now over. Exiting program")
         elif "SEND_MOVES" in message:
@@ -164,7 +167,12 @@ class BoardGame:
             move_string = ""
             for board in range(len(self.boards)):
                 move_string += str(possible_moves[randint(0, 3)])
-            self.client.send(move_string)
+            self.client.send(move_string, add_prelude=True)
+            self.prev_move = move_string
+        elif "RESEND_MOVE" in message:
+            print("Got RESEND_MOVE")
+            self.client.send(self.prev_move)
+            # sleep(10)
         else: # New board state (Just the updates positions of players)
             # print("Waiting for updated player positions")
             # print(list(data_buffer))
@@ -185,7 +193,7 @@ def main(num_of_players=1):
         
 
     while True:
-        # sleep(0.01)
+        sleep(0.001)
         for board in boards:
             if board.state == 0:
                 board.setup_game()
