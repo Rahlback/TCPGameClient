@@ -6,7 +6,7 @@ from random import randint
 server_ip = "192.168.50.162"
 server_port = 9080
 
-user_id = 15
+user_id = randint(100, 1234567)
 name = "Rasmus"
 
 bytes_per_player_position = 3
@@ -167,7 +167,7 @@ class BoardGame:
             move_string = ""
             for board in range(len(self.boards)):
                 move_string += str(possible_moves[randint(0, 3)])
-            self.client.send(move_string, add_prelude=True)
+            self.client.send(move_string)
             self.prev_move = move_string
         elif "RESEND_MOVE" in message:
             print("Got RESEND_MOVE")
@@ -186,7 +186,7 @@ class BoardGame:
     
 def main(num_of_players=1):
     boards = []
-    id = 15
+    id = user_id
     for x in range(0,num_of_players):
         id += 100
         boards.append(BoardGame(user_id=id))
@@ -204,4 +204,4 @@ def main(num_of_players=1):
         
 
 if __name__ == "__main__":
-    main(4)
+    main()
