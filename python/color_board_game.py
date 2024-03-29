@@ -152,6 +152,8 @@ class BoardGame:
                 # board.print_board_info()
             sleep(0.001)
             self.state = 1
+        elif data_buffer.decode() == "HEARTBEAT":
+            print("Heartbeat signal received. Waiting for game to start")
             
 
     def tick(self):
