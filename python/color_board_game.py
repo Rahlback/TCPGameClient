@@ -173,6 +173,10 @@ class BoardGame:
             print("Got RESEND_MOVE")
             self.client.send(self.prev_move)
             # sleep(10)
+        elif "HEARTBEAT" in message:
+            # We just need to pass the time
+            print("HEARTBEAT signal received. " + str(self.client.user_id))
+            pass
         else: # New board state (Just the updates positions of players)
             # print("Waiting for updated player positions")
             # print(list(data_buffer))
