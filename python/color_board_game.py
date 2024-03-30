@@ -2,6 +2,7 @@ from tcp_client import TCPClient
 from time import sleep
 from math import ceil
 from random import randint
+from color_board_bot import ColorBot
 
 server_ip = "192.168.50.162"
 server_port = 9080
@@ -167,8 +168,9 @@ class BoardGame:
             possible_moves = ['R', 'L', 'U', 'D']
             number_of_boards = len(self.boards)
             move_string = ""
-            for board in range(len(self.boards)):
-                move_string += str(possible_moves[randint(0, 3)])
+            for board in self.boards:
+                move_string += str(ColorBot.calculate_next_move(board.map, board.positions, board.player_number))
+
             self.client.send(move_string)
             self.prev_move = move_string
         elif "RESEND_MOVE" in message:
@@ -210,4 +212,4 @@ def main(num_of_players=1):
         
 
 if __name__ == "__main__":
-    main()
+    main(4)
