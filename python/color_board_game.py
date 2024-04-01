@@ -13,25 +13,6 @@ name = "Rasmus"
 bytes_per_player_position = 3
 
 class BoardGame:
-    class Board:
-        def __init__(self, board_map, player_positions={}) -> None:
-            self.map = board_map # [ [], [], [], ...]
-            self.positions = player_positions # Name: [x, y]
-            self.prev_positions = {}
-            self.player_number = 0
-        
-        def update_player_positions(self, player_positions):
-            self.prev_positions = self.positions
-            self.positions = player_positions
-        
-        def set_player_number(self, player_number):
-            self.player_number = player_number
-
-        def print_board_info(self):
-            # print(self.map)
-            print("Player number: ", self.player_number)
-            print("Positions: ", self.positions)
-
     def __init__(self, user_id=user_id, name=name) -> None:
         self.state = 0
         self.boards = []
@@ -138,7 +119,7 @@ class BoardGame:
             board_buffer = self.client.get_message()
             temp_boards = self.deserialize_boards(board_buffer)
             for board in temp_boards:
-                new_board_obj = self.Board(board)
+                new_board_obj = ColorBot(board)
                 self.boards.append(new_board_obj)
             
             print("Waiting for player positions")
@@ -150,7 +131,7 @@ class BoardGame:
             player_number = list(self.client.get_message())
             for board in self.boards:
                 board.set_player_number(player_number[0])
-                # board.print_board_info()
+                board.print_board_info()
             sleep(0.001)
             self.state = 1
         elif data_buffer.decode() == "HEARTBEAT":
@@ -168,13 +149,16 @@ class BoardGame:
             possible_moves = ['R', 'L', 'U', 'D']
             number_of_boards = len(self.boards)
             move_string = ""
+            board: ColorBot
             for board in self.boards:
-                move_string += str(ColorBot.calculate_next_move(board.map, board.positions, board.player_number))
+                move_string += str(board.calculate_next_move())
 
+            print("Sending " + move_string)
             self.client.send(move_string)
             self.prev_move = move_string
         elif "RESEND_MOVE" in message:
-            print("Got RESEND_MOVE")
+            print("Got RESEND_MOVE.", " resending: ", self.prev_move)
+            # self.client.send(self.prev_move)
             self.client.send(self.prev_move)
             # sleep(10)
         elif "HEARTBEAT" in message:
@@ -212,4 +196,4 @@ def main(num_of_players=1):
         
 
 if __name__ == "__main__":
-    main(4)
+    main(1)
