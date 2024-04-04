@@ -9,19 +9,19 @@ class ColorBotBase:
     def has_moved(self):
         if not self.prev_positions:
             return True
-        print(" ", self.prev_positions)
-        print(" ", self.positions)
+        # print(" ", self.prev_positions)
+        # print(" ", self.positions)
         return self.prev_positions[self.player_number] != self.positions[self.player_number]
     
     def update_player_positions(self, player_positions):
-        print(" before: ", self.positions)
+        # print(" before: ", self.positions)
         for key in self.positions:
             self.prev_positions[key] = self.positions[key].copy()
 
         self.positions = player_positions.copy()
-        print("update_palyer_positions: ", player_positions)
-        print(" self.positions=", self.positions)
-        print(" self.prev_positions=", self.prev_positions)
+        # print("update_palyer_positions: ", player_positions)
+        # print(" self.positions=", self.positions)
+        # print(" self.prev_positions=", self.prev_positions)
         for name in self.positions:
             pos = self.positions[name]
             self.map[pos[1]][pos[0]] = str(name)

@@ -9,7 +9,7 @@ class TCPClient:
         self.user_id = user_id
         self.end_of_message = bytearray([0])
     
-    def connect(self, server_ip: str, server_port: int, time_out_seconds: float = 1) -> bool:
+    def connect(self, server_ip: str, server_port: int, time_out_seconds: float = 10) -> bool:
         """ Connects to the server. Timeouts after time_out_seconds.
         Returns true if a connection was established, otherwise returns false.
         """
@@ -42,7 +42,7 @@ class TCPClient:
 
         # data.append(self.end_of_message as byte)
         self.client.sendall(data)
-        self.client.send(self.end_of_message)
+        # self.client.send(self.end_of_message)
 
     def get_message(self):
         """ This function will block until a message has been received

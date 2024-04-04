@@ -140,6 +140,7 @@ class BoardGame:
 
     def tick(self):
         data_buffer = self.client.get_message()
+        # print(data_buffer)
         message = data_buffer.decode()
         # print(message)
         if "GAME_OVER" in message:
@@ -153,7 +154,7 @@ class BoardGame:
             for board in self.boards:
                 move_string += str(board.calculate_next_move())
 
-            print("Sending " + move_string)
+            # print("Sending " + move_string)
             self.client.send(move_string)
             self.prev_move = move_string
         elif "RESEND_MOVE" in message:
@@ -196,4 +197,4 @@ def main(num_of_players=1):
         
 
 if __name__ == "__main__":
-    main(1)
+    main(64)
