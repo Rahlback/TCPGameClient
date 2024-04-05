@@ -197,4 +197,4 @@ def main(num_of_players=1):
         
 
 if __name__ == "__main__":
-    main(64)
+    main(4)
