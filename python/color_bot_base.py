@@ -7,6 +7,9 @@ class ColorBotBase:
 
     
     def has_moved(self):
+        """ Returns true if the bots current position is different than the bots previous position.
+        Else returns false.
+        """
         if not self.prev_positions:
             return True
         # print(" ", self.prev_positions)
@@ -62,6 +65,12 @@ class ColorBotBase:
         return valid_moves
 
     def translate_move_list_to_char(self, move):
+        """ move = 
+        [1, 0] -> 'R'
+        [-1, 0]-> 'L'
+        [0, -1]-> 'U'
+        [0, 1] -> 'D'
+        """
         match move:
             case [1, 0]:
                 return 'R'

@@ -183,8 +183,11 @@ def main():
         print("No config.yml file found!")
         return
 
-    boards = []
     id = randint(100, 1234567)
+    if config["user_id"] > 99:
+        id = config["user_id"]
+
+    boards = []
     for x in range(0,config["num_of_players"]):
         id += 100
         boards.append(BoardGame(
