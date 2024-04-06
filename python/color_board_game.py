@@ -172,7 +172,7 @@ class BoardGame:
         # elif data_buffer == bytearray("GAME_STARTING", "ASCII"):
         
     
-def main(num_of_players=1):
+def main():
     try:
         with open('config.yml', 'r') as file:
             config = safe_load(file)
@@ -182,7 +182,7 @@ def main(num_of_players=1):
 
     boards = []
     id = randint(100, 1234567)
-    for x in range(0,num_of_players):
+    for x in range(0,config["num_of_players"]):
         id += 100
         boards.append(BoardGame(
             user_id=id, 
@@ -203,4 +203,4 @@ def main(num_of_players=1):
         
 
 if __name__ == "__main__":
-    main(64)
+    main()
