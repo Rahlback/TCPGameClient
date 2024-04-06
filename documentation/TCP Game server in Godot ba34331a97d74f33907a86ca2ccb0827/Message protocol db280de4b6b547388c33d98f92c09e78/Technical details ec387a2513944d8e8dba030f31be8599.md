@@ -1,0 +1,5 @@
+# Technical details
+
+Hello
+
+[<img src="http://www.plantuml.com/plantuml/png/SoWkIImgAStDuGfEBIfBBLBGjLE0iAmKWa5I2ZcPnIMfUPbvwLpEEPcfUIN8AaAS0nIIy_FoKfDBiCW6fQQ3z1OfGAGGDa05h1ISy_FICejoOGeSKlDIW4u10000">](http://www.plantuml.com/plantuml/png/SoWkIImgAStDuGfEBIfBBLBGjLE0iAmKWa5I2ZcPnIMfUPbvwLpEEPcfUIN8AaAS0nIIy_FoKfDBiCW6fQQ3z1OfGAGGDa05h1ISy_FICejoOGeSKlDIW4u10000)
