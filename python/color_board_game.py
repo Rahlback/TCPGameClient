@@ -183,9 +183,10 @@ def main():
         print("No config.yml file found!")
         return
 
-    id = randint(100, 1234567)
-    if config["user_id"] > 99:
-        id = config["user_id"]
+    
+    id = config["user_id"] 
+    if id < 100 or id > 2**30:
+        id = randint(100, 268435455) # 0x64 - 0xfffffff
 
     boards = []
     for x in range(0,config["num_of_players"]):
