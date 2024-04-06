@@ -140,7 +140,7 @@ class BoardGame:
         data_buffer = self.client.get_message()
         # print(data_buffer)
         message = data_buffer.decode()
-        print(message)
+        # print(message)
         if "GAME_OVER" in message:
             print("All games are now over. Exiting program")
         elif "SEND_MOVES" in message:
@@ -166,7 +166,7 @@ class BoardGame:
             pass
         else: # New board state (Just the updates positions of players)
             # print("Waiting for updated player positions")
-            print(list(data_buffer))
+            # print(list(data_buffer))
             self.deserialize_player_positions_and_update_boards(data_buffer)
             # player_positions_buffer = list(self.client.get_message())
             # print(len(player_positions_buffer), player_positions_buffer)
