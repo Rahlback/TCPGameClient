@@ -15,7 +15,7 @@ class BoardGame:
         self.prev_move = ""
 
         self.client = TCPClient(user_id)
-        user_name = name + "-" + str(user_id)
+        user_name = name # + "-" + str(user_id)
         self.client.setup_connection(user_id, user_name, server_ip, server_port)
 
         # Wait until board game starts?
@@ -139,31 +139,39 @@ class BoardGame:
     def tick(self):
         data_buffer = self.client.get_message()
         # print(data_buffer)
-        message = data_buffer.decode()
-        # print(message)
-        if "GAME_OVER" in message:
-            print("All games are now over. Exiting program")
-        elif "SEND_MOVES" in message:
-            # print("Send moves received. Sending moves")
-            possible_moves = ['R', 'L', 'U', 'D']
-            number_of_boards = len(self.boards)
-            move_string = ""
-            board: ColorBot
-            for board in self.boards:
-                move_string += str(board.calculate_next_move())
+        binary_flag = True
+        try:
+            message = data_buffer.decode()
+            binary_flag = False
+        except:
+            # Message is binary
+            message = data_buffer
 
-            # print("Sending " + move_string)
-            self.client.send(move_string)
-            self.prev_move = move_string
-        elif "RESEND_MOVE" in message:
-            print("Got RESEND_MOVE.", " resending: ", self.prev_move)
-            # self.client.send(self.prev_move)
-            self.client.send(self.prev_move)
-            # sleep(10)
-        elif "HEARTBEAT" in message:
-            # We just need to pass the time
-            print("HEARTBEAT signal received. " + str(self.client.user_id))
-            pass
+        # print(message)
+        if not binary_flag:
+            if "GAME_OVER" in message:
+                print("All games are now over. Exiting program")
+            elif "SEND_MOVES" in message:
+                # print("Send moves received. Sending moves")
+                possible_moves = ['R', 'L', 'U', 'D']
+                number_of_boards = len(self.boards)
+                move_string = ""
+                board: ColorBot
+                for board in self.boards:
+                    move_string += str(board.calculate_next_move())
+
+                # print("Sending " + move_string)
+                self.client.send(move_string)
+                self.prev_move = move_string
+            elif "RESEND_MOVE" in message:
+                print("Got RESEND_MOVE.", " resending: ", self.prev_move)
+                # self.client.send(self.prev_move)
+                self.client.send(self.prev_move)
+                # sleep(10)
+            elif "HEARTBEAT" in message:
+                # We just need to pass the time
+                print("HEARTBEAT signal received. " + str(self.client.user_id))
+                pass
         else: # New board state (Just the updates positions of players)
             # print("Waiting for updated player positions")
             # print(list(data_buffer))
