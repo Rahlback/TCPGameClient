@@ -138,18 +138,10 @@ class BoardGame:
 
     def tick(self):
         data_buffer = self.client.get_message()
-        # print(data_buffer)
-        binary_flag = True
-        try:
-            message = data_buffer.decode()
-            binary_flag = False
-        except:
-            # Message is binary
-            message = data_buffer
 
-        # print(message)
         if bytearray("GAME_OVER", "ASCII") == data_buffer[0:9]:
             print("All games are now over. Exiting program")
+            exit(0)
         elif bytearray("SEND_MOVES", "ASCII") == data_buffer[0:10] \
             or bytearray("SETUP_COMPLETE_SEND_MOVES", "ASCII") == data_buffer[0:25]:
             # print("Send moves received. Sending moves")
@@ -160,7 +152,7 @@ class BoardGame:
             for board in self.boards:
                 move_string += str(board.calculate_next_move())
 
-            print("Sending " + move_string)
+            # print("Sending " + move_string)
             self.client.send(move_string)
             self.prev_move = move_string
         elif bytearray("RESEND_MOVE", "ASCII") == data_buffer[0:11]:
