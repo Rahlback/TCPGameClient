@@ -1,4 +1,5 @@
-from yaml import safe_load
+# from yaml import safe_load
+from yaml_replacement import Constants
 from tcp_client import TCPClient
 from time import sleep
 from math import ceil
@@ -176,26 +177,26 @@ class BoardGame:
         
     
 def main():
-    try:
-        with open('config.yml', 'r') as file:
-            config = safe_load(file)
-    except IOError:
-        print("No config.yml file found!")
-        return
+    # try:
+    #     with open('config.yml', 'r') as file:
+    #         config = safe_load(file)
+    # except IOError:
+    #     print("No config.yml file found!")
+    #     return
 
-    
-    id = config["user_id"] 
+    config = Constants()
+    id = config.user_id
     if id < 100 or id > 2**30:
         id = randint(100, 268435455) # 0x64 - 0xfffffff
 
     boards = []
-    for x in range(0,config["num_of_players"]):
+    for x in range(0,config.num_of_players):
         id += 100
         boards.append(BoardGame(
             user_id=id, 
-            name=config["name"], 
-            server_ip=config["server_ip"], 
-            server_port=config["server_port"]))
+            name=config.name,
+            server_ip=config.server_ip,
+            server_port=config.server_port))
         
 
     while True:
