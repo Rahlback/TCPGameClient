@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://bu7ru2wbbxyuu"]
+
+[ext_resource type="Script" path="res://ClientAPI/ClientAPI.gd" id="1_0fu0e"]
+
+[node name="ClientApi" type="Node"]
+script = ExtResource("1_0fu0e")
