@@ -136,6 +136,18 @@ class BoardGame:
             print("Message received: ", message)
             
 
+    def send_moves(self):
+        possible_moves = ['R', 'L', 'U', 'D']
+        number_of_boards = len(self.boards)
+        move_string = ""
+        board: ColorBot
+        for board in self.boards:
+            move_string += str(board.calculate_next_move())
+
+        # print("Sending " + move_string)
+        self.client.send(move_string)
+        self.prev_move = move_string
+
     def tick(self):
         data_buffer = self.client.get_message()
 
@@ -145,16 +157,8 @@ class BoardGame:
         elif bytearray("SEND_MOVES", "ASCII") == data_buffer[0:10] \
             or bytearray("SETUP_COMPLETE_SEND_MOVES", "ASCII") == data_buffer[0:25]:
             # print("Send moves received. Sending moves")
-            possible_moves = ['R', 'L', 'U', 'D']
-            number_of_boards = len(self.boards)
-            move_string = ""
-            board: ColorBot
-            for board in self.boards:
-                move_string += str(board.calculate_next_move())
+            self.send_moves()
 
-            # print("Sending " + move_string)
-            self.client.send(move_string)
-            self.prev_move = move_string
         elif bytearray("RESEND_MOVE", "ASCII") == data_buffer[0:11]:
             print("Got RESEND_MOVE.", " resending: ", self.prev_move)
             # self.client.send(self.prev_move)
@@ -168,6 +172,7 @@ class BoardGame:
             # print("Waiting for updated player positions")
             # print(list(data_buffer))
             self.deserialize_player_positions_and_update_boards(data_buffer)
+            self.send_moves()
             # player_positions_buffer = list(self.client.get_message())
             # print(len(player_positions_buffer), player_positions_buffer)
 
