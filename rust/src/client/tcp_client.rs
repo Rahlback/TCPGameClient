@@ -1,7 +1,6 @@
 
 use std::io::prelude::*;
 use std::net::TcpStream;
-use std::str::from_utf8;
 
 pub struct TCPClient {
     stream: TcpStream,
@@ -27,16 +26,16 @@ impl TCPClient {
         let range = usize::try_from(message_length).unwrap();
         self.stream.read(&mut buffer_t[0..range]);
 
-        let s = from_utf8(&buffer_t[0..range]).unwrap();
+        // let s = from_utf8(&buffer_t[0..range]).unwrap();
 
-        println!("Received: {:?} = {}", buffer_l, message_length);
-        println!("  Message: {:?}", s);
+        // println!("Received: {:?} = {}", buffer_l, message_length);
+        // println!("  Message: {:?}", s);
 
         // self.stream.read_to_string(buf)
         if res.is_err() {
             println!("TCPClient: Something went wrong! {}", res.err().unwrap().to_string());
         }
-        return vec![];
+        return buffer_t[0..range].to_vec();
     }
 
     pub fn register(&mut self, name: &str, user_id: u32, big_endian : u32) -> () {
@@ -46,6 +45,12 @@ impl TCPClient {
         
         println!("Sending message: {}", register_message);
         let _ = self.stream.write_all(register_message.as_bytes());
+
+        let response = self.get_message();
+
+        if response.is_ascii() {
+            println!("{}", String::from_utf8(response).expect("Error"));
+        }
 
     }
 }
