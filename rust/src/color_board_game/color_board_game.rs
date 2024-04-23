@@ -15,6 +15,11 @@ pub struct ColorBoardGame {
     boards: Vec<Board>
 }
 
+
+fn build_boards(game_client: &mut ColorBoardGame) {
+    
+}
+
 fn game_tick(game_client: &mut ColorBoardGame) -> bool {
     let message = game_client.tcp_client.get_message();
     if message.is_empty() { // Connection to server is probably broken.
