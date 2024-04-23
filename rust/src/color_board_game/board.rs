@@ -1,3 +1,7 @@
+use std::collections::HashMap;
+
 pub struct Board {
-    map: Vec<Vec<u8>>
+    pub map: Vec<Vec<u8>>,
+    pub positions: HashMap<u8, (u8, u8)>
+    
 }

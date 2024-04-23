@@ -24,7 +24,7 @@ impl TCPClient {
 
         let mut buffer_t: [u8; 10000] = [0; 10000];
         let range = usize::try_from(message_length).unwrap();
-        self.stream.read(&mut buffer_t[0..range]);
+        let full_read_res = self.stream.read(&mut buffer_t[0..range]);
 
         // let s = from_utf8(&buffer_t[0..range]).unwrap();
 
@@ -34,6 +34,10 @@ impl TCPClient {
         // self.stream.read_to_string(buf)
         if res.is_err() {
             println!("TCPClient: Something went wrong! {}", res.err().unwrap().to_string());
+        }
+
+        if full_read_res.is_err() {
+            println!("Failed to read TCPStream");
         }
         return buffer_t[0..range].to_vec();
     }
@@ -51,17 +55,20 @@ impl TCPClient {
         if response.is_ascii() {
             println!("{}", String::from_utf8(response).expect("Error"));
         }
-
     }
+
+    pub fn send_message(&mut self, message: String) -> Result<(), std::io::Error> {
+        println!("Sending: {}", &message);
+        return self.stream.write_all(message.as_bytes());      
+    }
+
 }
 
-pub fn connect_to_server(server_ip: &str, server_port: &str) -> TCPClient{
+pub fn connect_to_server(server_ip: &str, server_port: &str) -> Result<TCPClient, String> {
     let client = TcpStream::connect(format!("{server_ip}:{server_port}"));
     
     match &client {
-        Ok(_) => println!("Success"),
-        Err(eh) => println!("Failure to connect: {}", eh.to_string())
+        Ok(_) => Ok(TCPClient {stream: client.unwrap(), name: "RustDefault".to_string(), user_id: 0}),
+        Err(eh) => Err(format!("Failure to connect: {}", eh.to_string()))
     }
-    
-    return TCPClient {stream: client.unwrap(), name: "RustDefault".to_string(), user_id: 0}
 }
