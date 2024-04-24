@@ -16,7 +16,7 @@ pub struct ColorBoardGame {
 }
 
 
-fn deserialize_boards(serialized_boards: Vec<u8>) -> Result<Vec<Board>, &'static str> {
+fn deserialize_boards_and_positions(serialized_boards: Vec<u8>, serialized_positions: Vec<u8>) -> Result<Vec<Board>, &'static str> {
     let mut boards: Vec<Board> = vec![];
     let mut number_of_boards = 0;
     for x in &serialized_boards[0..4] {
@@ -24,9 +24,29 @@ fn deserialize_boards(serialized_boards: Vec<u8>) -> Result<Vec<Board>, &'static
         number_of_boards += usize::from(x.clone());
     }
 
+    println!("Serialized board: {:?}", serialized_boards);
     // println!("Number of boards = {}", &number_of_boards);
+    let mut byte_offset: usize = 4;
     for _ in 0..number_of_boards {
-        game_client.boards.push(Board{map: vec![], positions: HashMap::new()});
+        let mut board: Vec<Vec<u8>>= vec![];
+        let mut positions: HashMap<u8, (u8, u8)> = HashMap::new();
+
+        let width: u16 = (u16::from(serialized_boards[byte_offset]) << 8) + u16::from(serialized_boards[byte_offset+1]);
+        let height: u16 = (u16::from(serialized_boards[byte_offset+2]) << 8) + u16::from(serialized_boards[byte_offset+3]);
+        byte_offset += 4; // The above lines just consumed 4 bytes. Move pointer 4 bytes over.
+
+        let mut number_of_bytes_per_row = 0;
+        while number_of_bytes_per_row * 8 < width {
+            number_of_bytes_per_row += 1;
+        }
+        println!("Width: {} => {}, height: {}", width, number_of_bytes_per_row, height);
+
+        let mut row_byte_offset = 0;
+        for _ in 0..height {
+            // TODO implement this logic
+        }
+
+        // game_client.boards.push(Board{map: vec![], positions: HashMap::new()});
     }
 
     return Err("NOPE");
@@ -36,14 +56,18 @@ fn setup_game(game_client: &mut ColorBoardGame) {
     
     // Get serialized boards
     let serialized_boards = game_client.tcp_client.get_message();
-    println!("Serialized boards: {:?}", serialized_boards);
-
-
-
-
-
+    
     // Player positional data
     let serialized_positional_data = game_client.tcp_client.get_message();
+
+    let board_data = deserialize_boards_and_positions(serialized_boards, 
+                                                                                serialized_positional_data);
+
+    match board_data {
+        Ok(boards) => game_client.boards = boards,
+        Err(err) => println!("ERROR: {}", err),
+    }
+
 
     // Player number
     let player_number = game_client.tcp_client.get_message();

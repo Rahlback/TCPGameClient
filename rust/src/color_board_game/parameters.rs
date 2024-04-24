@@ -6,4 +6,4 @@ pub const USER_ID: u32 = 0;
 
 pub const BIG_ENDIAN: u32 = 1;
 
-pub const NUMBER_OF_PLAYERS: u32 = 64;
+pub const NUMBER_OF_PLAYERS: u32 = 4;
