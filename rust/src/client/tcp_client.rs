@@ -1,6 +1,7 @@
 
 use std::io::prelude::*;
 use std::net::TcpStream;
+use std::os::windows::io::IntoRawSocket;
 
 pub struct TCPClient {
     stream: TcpStream,
@@ -58,10 +59,18 @@ impl TCPClient {
     }
 
     pub fn send_message(&mut self, message: String) -> Result<(), std::io::Error> {
-        println!("Sending: {}", &message);
-        return self.stream.write_all(message.as_bytes());      
+        // println!("Sending: {} <-- {:?}", &message, message.as_bytes());
+        // self.stream.write(buf)
+        // let flush_res = self.stream.flush();
+        let res = self.stream.write_all(message.as_bytes());
+
+        
+        return res;
     }
 
+    pub fn set_no_delay(&mut self, val: bool) {
+        self.stream.set_nodelay(val).expect("set_nodelay call failed");
+    }
 }
 
 pub fn connect_to_server(server_ip: &str, server_port: &str) -> Result<TCPClient, String> {
