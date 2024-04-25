@@ -2,7 +2,7 @@
 
 use std::{collections::HashMap, thread::sleep, time};
 
-use crate::{client::{self, tcp_client::TCPClient}, color_board_game::parameters};
+use crate::{client::{self, tcp_client::TCPClient}, color_board_game::{board::{WALL, WHITE_TILE}, parameters}};
 use rand::{self, Rng};
 
 use super::board::Board;
@@ -17,6 +17,7 @@ pub struct ColorBoardGame {
 
 
 fn deserialize_boards_and_positions(serialized_boards: Vec<u8>, serialized_positions: Vec<u8>) -> Result<Vec<Board>, &'static str> {
+    println!("Positional data: {:?}", serialized_positions);
     let mut boards: Vec<Board> = vec![];
     let mut number_of_boards = 0;
     for x in &serialized_boards[0..4] {
@@ -24,11 +25,11 @@ fn deserialize_boards_and_positions(serialized_boards: Vec<u8>, serialized_posit
         number_of_boards += usize::from(x.clone());
     }
 
-    println!("Serialized board: {:?}", serialized_boards);
+    // println!("Serialized board: {:?}", serialized_boards);
     // println!("Number of boards = {}", &number_of_boards);
     let mut byte_offset: usize = 4;
     for _ in 0..number_of_boards {
-        let mut board: Vec<Vec<u8>>= vec![];
+        let mut board: Vec<Vec<u8>>= vec![]; // Remove later
         let mut positions: HashMap<u8, (u8, u8)> = HashMap::new();
 
         let width: u16 = (u16::from(serialized_boards[byte_offset]) << 8) + u16::from(serialized_boards[byte_offset+1]);
@@ -39,13 +40,35 @@ fn deserialize_boards_and_positions(serialized_boards: Vec<u8>, serialized_posit
         while number_of_bytes_per_row * 8 < width {
             number_of_bytes_per_row += 1;
         }
-        println!("Width: {} => {}, height: {}", width, number_of_bytes_per_row, height);
+        // println!("Width: {} => {}, height: {}", width, number_of_bytes_per_row, height);
 
-        let mut row_byte_offset = 0;
+        
+        let mut row_data: Vec<Vec<u8>> = vec![];
         for _ in 0..height {
             // TODO implement this logic
-        }
+            let mut row: Vec<u8> = vec![];
 
+            for _ in 0..number_of_bytes_per_row {
+                row.push(serialized_boards[byte_offset]);
+                byte_offset += 1;
+            }
+           
+            let mut row_desiralized: Vec<u8> = vec![];
+            for bit_index in 0..width {
+                let byte_index = bit_index / 8;
+                if row[usize::from(byte_index)] & (1 << (bit_index % 8)) > 0 {
+                    row_desiralized.push(WALL);
+                }
+                else {
+                    row_desiralized.push(WHITE_TILE);
+                }
+            }
+            row_data.push(row_desiralized);
+
+        }
+        
+        let board_obj = Board{map: row_data, positions: HashMap::new()};
+        boards.push(board_obj);
         // game_client.boards.push(Board{map: vec![], positions: HashMap::new()});
     }
 
