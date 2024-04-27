@@ -21,7 +21,13 @@ impl custom_data {
 impl Board {
 
     fn get_pos(&self) -> (u8, u8) {
-        self.positions[&self.player_number]
+        if self.positions.contains_key(&self.player_number) {
+            return self.positions[&self.player_number]
+        }
+        else {
+            println!("{:?}", self.positions);
+            return (0, 0);
+        }
     }
 
     fn get_prev_pos(&self) -> Option<(u8, u8)> {
