@@ -1,7 +1,6 @@
 
 use std::io::prelude::*;
 use std::net::TcpStream;
-use std::os::windows::io::IntoRawSocket;
 
 pub struct TCPClient {
     stream: TcpStream,
