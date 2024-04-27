@@ -1,6 +1,6 @@
 // use std::{error::Error, net::TcpStream};
 
-use std::{collections::HashMap, thread::sleep, time};
+use std::{collections::HashMap, time};
 
 use crate::{client::{self, tcp_client::TCPClient}, color_board_game::{board::{WALL, WHITE_TILE}, parameters}};
 use rand::{self, Rng};
@@ -126,9 +126,6 @@ fn deserialize_positional_data(game_client: &mut ColorBoardGame, serialized_posi
 }
 
 fn send_move(game_client: &mut ColorBoardGame) {
-    
-    let moves = vec!["U", "D","L","R"];
-
     let mut player_move: String = "".to_string();
     for board in &mut game_client.boards {
         let board_move = board.calculate_next_move();
@@ -182,8 +179,8 @@ fn game_tick(game_client: &mut ColorBoardGame) -> bool {
 
 pub fn game_loop(mut game_clients: Vec<ColorBoardGame>) {
     loop {
-        let sleep_duration = time::Duration::from_millis(1);
-        // sleep(sleep_duration);
+        let _sleep_duration = time::Duration::from_millis(1);
+        // sleep(_sleep_duration);
         for client in &mut game_clients {
             if !game_tick(client) {
                 return;

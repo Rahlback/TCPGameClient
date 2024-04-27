@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use super::color_board_bot::custom_data;
+use super::color_board_bot::CustomData;
 
 pub const WALL: u8 = 255;
 pub const WHITE_TILE: u8 = 254;
@@ -18,15 +18,15 @@ pub struct Board {
     /// Your own player number. Use this in conjuction with positions to get your position on the board
     pub player_number: u8,
 
-    pub player_data: custom_data
+    pub player_data: CustomData
 }
 
 impl Board {
     pub fn new(map: Vec<Vec<u8>>, positions: HashMap<u8, (u8, u8)>, player_number: u8) -> Self {
-        Self { map, positions, player_number, player_data: custom_data::new() }
+        Self { map, positions, player_number, player_data: CustomData::new() }
     }
     
-    pub fn print_map(&self) {
+    pub fn _print_map(&self) {
         let mut s: String = String::new();
         println!("{:?}", self.map);
         
