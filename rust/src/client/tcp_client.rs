@@ -26,7 +26,7 @@ impl TCPClient {
 
         let mut buffer_t: [u8; 1000000] = [0; 1000000];
         let range = usize::try_from(message_length).unwrap();
-        let full_read_res = self.stream.read(&mut buffer_t[0..range]);
+        let full_read_res = self.stream.read_exact(&mut buffer_t[0..range]);
 
         // let s = from_utf8(&buffer_t[0..range]).unwrap();
 
