@@ -5,8 +5,8 @@ use std::os::windows::io::IntoRawSocket;
 
 pub struct TCPClient {
     stream: TcpStream,
-    name: String,
-    user_id: u32
+    pub name: String,
+    pub user_id: u32
 }
 
 
@@ -23,7 +23,7 @@ impl TCPClient {
             offset -= 8;
         }
 
-        let mut buffer_t: [u8; 10000] = [0; 10000];
+        let mut buffer_t: [u8; 1000000] = [0; 1000000];
         let range = usize::try_from(message_length).unwrap();
         let full_read_res = self.stream.read(&mut buffer_t[0..range]);
 
@@ -58,7 +58,7 @@ impl TCPClient {
         }
     }
 
-    pub fn send_message(&mut self, message: String) -> Result<(), std::io::Error> {
+    pub fn send_message(&mut self, message: &String) -> Result<(), std::io::Error> {
         // println!("Sending: {} <-- {:?}", &message, message.as_bytes());
         // self.stream.write(buf)
         // let flush_res = self.stream.flush();
