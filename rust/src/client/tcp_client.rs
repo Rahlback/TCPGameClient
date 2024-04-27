@@ -20,7 +20,9 @@ impl TCPClient {
         for x in buffer_l {
             message_length += u32::from(x) << offset;
             offset -= 8;
+
         }
+        println!("Message length: {}", message_length);
 
         let mut buffer_t: [u8; 1000000] = [0; 1000000];
         let range = usize::try_from(message_length).unwrap();
