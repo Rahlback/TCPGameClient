@@ -1,6 +1,6 @@
 // use std::{error::Error, net::TcpStream};
 
-use std::{collections::HashMap, time};
+use std::{collections::HashMap, process::exit, thread::sleep, time};
 
 use crate::{client::{self, tcp_client::TCPClient}, color_board_game::{board::{WALL, WHITE_TILE}, parameters}};
 use rand::{self, Rng};
@@ -168,6 +168,11 @@ fn game_tick(game_client: &mut ColorBoardGame) -> bool {
     else if message == [82, 69, 83, 69, 78, 68, 95, 77, 79, 86, 69] {
         send_move(game_client);
     }
+
+    // GAME_OVER
+    else if message == [71, 65, 77, 69, 95, 79, 86, 69, 82] {
+        println!("GAME_OVER received. Next message will restart a new game");
+    }
     else {
         // Send move
         deserialize_positional_data(game_client, message);
@@ -180,7 +185,7 @@ fn game_tick(game_client: &mut ColorBoardGame) -> bool {
 pub fn game_loop(mut game_clients: Vec<ColorBoardGame>) {
     loop {
         let _sleep_duration = time::Duration::from_millis(1);
-        // sleep(_sleep_duration);
+        sleep(_sleep_duration);
         for client in &mut game_clients {
             if !game_tick(client) {
                 return;

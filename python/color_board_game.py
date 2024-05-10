@@ -107,34 +107,26 @@ class BoardGame:
 
 
     def setup_game(self):
-        data_buffer = self.client.get_message()
-        message = data_buffer.decode()
-        print("Trying to setup game: ", message)
-        if message == "GAME_STARTING":
-            print("Start game received. Waiting for boards")
-            board_buffer = self.client.get_message()
-            temp_boards = self.deserialize_boards(board_buffer)
-            for board in temp_boards:
-                new_board_obj = ColorBot(board)
-                self.boards.append(new_board_obj)
-            
-            print("Waiting for player positions")
-            player_positions_buffer = list(self.client.get_message())
-            self.deserialize_player_positions_and_update_boards(player_positions_buffer)
-            print(len(player_positions_buffer), player_positions_buffer)
+        self.boards.clear()
+        print("Start game received. Waiting for boards")
+        board_buffer = self.client.get_message()
+        temp_boards = self.deserialize_boards(board_buffer)
+        for board in temp_boards:
+            new_board_obj = ColorBot(board)
+            self.boards.append(new_board_obj)
+        
+        print("Waiting for player positions")
+        player_positions_buffer = list(self.client.get_message())
+        self.deserialize_player_positions_and_update_boards(player_positions_buffer)
+        print(len(player_positions_buffer), player_positions_buffer)
 
-            print("Waiting for my player number")
-            player_number = list(self.client.get_message())
-            for board in self.boards:
-                board.set_player_number(player_number[0])
-                board.print_board_info()
-            sleep(0.001)
-            self.state = 1
-        elif message == "HEARTBEAT":
-            print("Heartbeat signal received. Waiting for game to start")
-        else:
-            print("Message received: ", message)
-            
+        print("Waiting for my player number")
+        player_number = list(self.client.get_message())
+        for board in self.boards:
+            board.set_player_number(player_number[0])
+            board.print_board_info()
+        sleep(0.001)
+        self.state = 1
 
     def send_moves(self):
         possible_moves = ['R', 'L', 'U', 'D']
@@ -150,10 +142,10 @@ class BoardGame:
 
     def tick(self):
         data_buffer = self.client.get_message()
-
-        if bytearray("GAME_OVER", "ASCII") == data_buffer[0:9]:
-            print("All games are now over. Exiting program")
-            exit(0)
+        if bytearray("GAME_STARTING", "ASCII") == data_buffer[0:13]:
+            self.setup_game()
+        elif bytearray("GAME_OVER", "ASCII") == data_buffer[0:9]:
+            print("All games are now over. Expect a new GAME_STARTING to begin")
         elif bytearray("SEND_MOVES", "ASCII") == data_buffer[0:10] \
             or bytearray("SETUP_COMPLETE_SEND_MOVES", "ASCII") == data_buffer[0:25]:
             # print("Send moves received. Sending moves")
@@ -206,11 +198,7 @@ def main():
     while True:
         # sleep(0.001)
         for board in boards:
-            if board.state == 0:
-                board.setup_game()
-                print("\n-----------------\n")
-            else:
-                board.tick()
+            board.tick()
 
         
 
