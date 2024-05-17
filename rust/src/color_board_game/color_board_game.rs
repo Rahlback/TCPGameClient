@@ -1,6 +1,6 @@
 // use std::{error::Error, net::TcpStream};
 
-use std::{collections::HashMap, process::exit, thread::sleep, time};
+use std::{collections::HashMap, process::exit, thread::{self, sleep}, time};
 
 use crate::{client::{self, tcp_client::TCPClient}, color_board_game::{board::{WALL, WHITE_TILE}, parameters}};
 use rand::{self, Rng};
@@ -195,6 +195,19 @@ pub fn game_loop(mut game_clients: Vec<ColorBoardGame>) {
     }
 }
 
+
+fn run_single_client(mut game_client: ColorBoardGame) {
+    println!("run_single_client called");
+    loop {
+        let _sleep_duration = time::Duration::from_millis(1);
+        sleep(_sleep_duration);
+        if !game_tick(&mut game_client) {
+            return;
+        }
+        
+    }
+}
+
 pub fn run_game() {
 
     let mut game_clients: Vec<ColorBoardGame> = vec![];
@@ -221,10 +234,18 @@ pub fn run_game() {
         game_client.register(parameters::USER_NAME, user_id, parameters::BIG_ENDIAN);
         
         let color_board_game_client = ColorBoardGame{tcp_client: game_client, boards: vec![], prev_move: "".to_string()};
-        game_clients.push(color_board_game_client);
+        // game_clients.push(color_board_game_client);
+        thread::spawn(|| {
+            run_single_client(color_board_game_client);
+        });
+
         user_id += 100;
+        let _sleep_duration = time::Duration::from_millis(30);
+        sleep(_sleep_duration);
     }
 
-
-    game_loop(game_clients);
+    loop {
+        
+    }
+    // game_loop(game_clients);
 }
